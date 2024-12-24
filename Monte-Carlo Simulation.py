@@ -16,12 +16,15 @@ n_observations = 750
 n_days = 10
 num_trials = [100, 200, 500, 1000, 2000, 5000, 10000, 50000, 100000, 500000]
 
-# Price P_i generation 
+# 1-day returns generation
 np.random.seed(42)
-P = levy_stable.rvs(alpha, beta, loc=delta, scale=gamma, size=n_observations+1)
+r1 = levy_stable.rvs(alpha, beta, loc=delta, scale=gamma, size=n_observations)
 
-# Calculating 1-day returns
-r1 = np.array([(P[i + 1] - P[i]) / P[i] for i in range(n_observations - 1)])
+# Calculating price P_i from r1
+P = [1.0]  # Initial price
+for r in r1:
+    P.append(P[-1] * (1 + r))
+P = np.array(P)
 
 # Calculating 10-day returns
 r10 = np.array([(P[i + n_days] - P[i]) / P[i] for i in range(n_observations - n_days)])
@@ -48,11 +51,13 @@ standard_errors = []
 for N in tqdm(num_trials):
     quantiles = []
     for _ in range(N):
-        # Price generation
-        P_sample = levy_stable.rvs(alpha, beta, loc=delta, scale=gamma, size=n_observations+1)
-        # Calculating 10-day returns
-        r10_sample = np.array([(P_sample[i + n_days] - P_sample[i]) / P_sample[i] for i in range(n_observations - n_days)])
-        # Quantile
+        r1_sample = levy_stable.rvs(alpha, beta, loc=delta, scale=gamma, size=n_observations)
+        P_sample = [1.0]
+        for r in r1_sample:
+            P_sample.append(P_sample[-1] * (1 + r))
+        P_sample = np.array(P_sample)
+        r10_sample = [(P_sample[i + n_days] - P_sample[i]) / P_sample[i] for i in range(n_observations - n_days)]
+        r10_sample = np.array(r10_sample)
         quantiles.append(np.percentile(r10_sample, 1))
     
     # Average quantile and variance
