@@ -32,12 +32,12 @@ percentile_1 = np.percentile(r10, 1)
 
 # Plotting a histogram for r10
 plt.hist(r10, bins=50, density=True, alpha=0.7, color='blue', label="Distribution of 10-day returns")
-plt.axvline(x=percentile_1, color='red', linestyle='--', label=f"1% quantile = {percentile_1:.2f}")
+plt.axvline(x=percentile_1, color='red', linestyle='--', label="1% quantile")
 plt.title("Distribution of 10-day returns")
 plt.xlabel("10-day returns")
 plt.ylabel("Density")
 plt.xscale("symlog", linthresh=1)
-plt.legend(loc="upper center", bbox_to_anchor=(0.45, -0.07), ncol=1, frameon=True)
+plt.legend()
 plt.grid(True)
 #plt.show()
 
